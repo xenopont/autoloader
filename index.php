@@ -1,6 +1,6 @@
 <?php
 namespace project {
-    require_once(__DIR__ . '/../autoloader/autoload.php');
+    require_once(__DIR__ . '/autoloader/autoload.php');
 
     use App\TestObject;
     use Core\Exception;

@@ -1,6 +1,4 @@
 <?php
-
 require_once(__DIR__.'/classes/loader.php');
 
-$loader = new Autoloader();
-
+$loader = new Autoloader\Autoloader();

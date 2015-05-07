@@ -1,5 +1,10 @@
 <?php
 
-class Autoloader {
+namespace Autoloader {
+
+    class Autoloader {
+
+    }
 
 }
+
