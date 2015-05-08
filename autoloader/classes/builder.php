@@ -40,10 +40,7 @@ namespace Autoloader{
             }
             else{
                 do{
-                    $next = false;
-                    if(!is_null($this->subdirectoryIterator)){
-                        $next = $this->subdirectoryIterator->next();
-                    }
+                    $next = is_null($this->subdirectoryIterator) ? false : $this->subdirectoryIterator->next();
                     if($next === false){
                         $this->subdirectoryIterator = null;
                         while(($next = $this->dir->read()) !== false){
