@@ -22,6 +22,7 @@ namespace Autoloader {
                     $this->map[$v] = $filename;
                 }
             }
+            $this->saveMap();
         }
 
         private function extractClasses($fileContent){
@@ -40,6 +41,18 @@ namespace Autoloader {
                 }
             }
             return $result;
+        }
+
+        private function saveMap(){
+            $mapFilename = realpath(__DIR__.'/../map.php');
+            $f = fopen($mapFilename, 'wb');
+            if($f === false){
+                echo 'Can not write to "'.$mapFilename.'". Aborted.', "\n";
+            }
+            else{
+                fwrite($f, '<?php'."\n".'return '.var_export($this->map, true).';'."\n");
+                fclose($f);
+            }
         }
     }
 
