@@ -6,15 +6,17 @@ namespace Autoloader {
         const REGEXP_NAMESPACE = '/(namespace)\s+([_A-Za-z0-9\\\]+)/';
         const REGEXP_CLASS     = '/(class|interface|trait)\s+([_A-Za-z0-9]+)/';
 
+        private $dirToIgnore = array();
         private $map = array();
         private $path = './';
 
-        public function __construct($path){
+        public function __construct($path, $settings){
             $this->path = realpath($path);
+            $this->dirToIgnore = $settings['ignore-dir'];
         }
 
         public function run(){
-            $iterator = new DirectoryIterator($this->path);
+            $iterator = new DirectoryIterator($this->path, $this->dirToIgnore);
             while(($filename = $iterator->next()) !== false){
                 $fileContent = file_get_contents($filename);
                 $classes = $this->extractClasses($fileContent);
@@ -59,13 +61,15 @@ namespace Autoloader {
     class DirectoryIterator {
         private static $autoloaderDir = '';
         private $dir = null;
+        private $ignore = array();
         private $path = '';
         /** @var DirectoryIterator */
         private $subdirectoryIterator = null;
 
-        public function __construct($path){
-            $this->path = $path;
-            $this->dir  = dir($this->path);
+        public function __construct($path, $ignore){
+            $this->path   = $path;
+            $this->dir    = dir($this->path);
+            $this->ignore = $ignore;
             if(empty(self::$autoloaderDir)){
                 self::$autoloaderDir = realpath(__DIR__.'/..');
             }
@@ -76,28 +80,29 @@ namespace Autoloader {
                 return false;
             }
             else{
-                do{
+                do {
                     $next = is_null($this->subdirectoryIterator) ? false : $this->subdirectoryIterator->next();
                     if($next === false){
                         $this->subdirectoryIterator = null;
+                        $shortName = false;
                         while(($next = $this->dir->read()) !== false){
                             if($next == '.' || $next == '..'){
                                 continue;
                             }
+                            $shortName = $next;
                             $next = $this->path.'/'.$next;
                             if($next == self::$autoloaderDir){
                                 continue;
                             }
                             break;
                         }
-                        if(is_dir($next)){
-                            $this->subdirectoryIterator = new DirectoryIterator($next);
+                        if($next !== false && is_dir($next) && !in_array($shortName, $this->ignore)){
+                            $this->subdirectoryIterator = new DirectoryIterator($next, $this->ignore);
                             continue;
                         }
                     }
                     break;
-                }
-                while($next !== false);
+                } while($next !== false);
                 return $next;
             }
         }
