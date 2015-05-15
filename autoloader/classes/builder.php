@@ -3,7 +3,7 @@
 namespace Autoloader {
 
     class Builder {
-        const REGEXP_NAMESPACE = '/(namespace)\s+([_A-Za-z0-9\\]+)/';
+        const REGEXP_NAMESPACE = '/(namespace)\s+([_A-Za-z0-9\\\]+)/';
         const REGEXP_CLASS     = '/(class|interface|trait)\s+([_A-Za-z0-9]+)/';
 
         private $map = array();
@@ -11,21 +11,34 @@ namespace Autoloader {
 
         public function __construct($path){
             $this->path = realpath($path);
-            echo $this->path, " content:\n\n";
         }
 
         public function run(){
             $iterator = new DirectoryIterator($this->path);
-            while(($next = $iterator->next()) !== false){
-                echo 'FILE: ', $next, "\n";
-                $fileContent = file_get_contents($next);
-                var_dump($this->extractClasses($fileContent));
+            while(($filename = $iterator->next()) !== false){
+                $fileContent = file_get_contents($filename);
+                $classes = $this->extractClasses($fileContent);
+                foreach($classes as $v){
+                    $this->map[$v] = $filename;
+                }
             }
         }
 
         private function extractClasses($fileContent){
             $result = array();
-            //
+            $namespace = '';
+            $matches = array();
+            preg_match_all(self::REGEXP_NAMESPACE, $fileContent, $matches);
+            if(isset($matches[2], $matches[2][0])){
+                $namespace = $matches[2][0];
+            }
+            $matches = array();
+            preg_match_all(self::REGEXP_CLASS, $fileContent, $matches);
+            if(isset($matches[2]) && is_array($matches[2]) && count($matches[2]) > 0){
+                foreach($matches[2] as $className){
+                    $result[] = empty($namespace) ? $className : $namespace.'\\'.$className;
+                }
+            }
             return $result;
         }
     }
