@@ -1,8 +1,11 @@
 <?php
 
-namespace Autoloader{
+namespace Autoloader {
 
     class Builder {
+        const REGEXP_NAMESPACE = '/(namespace)\s+([_A-Za-z0-9\\]+)/';
+        const REGEXP_CLASS     = '/(class|interface|trait)\s+([_A-Za-z0-9]+)/';
+
         private $map = array();
         private $path = './';
 
@@ -14,8 +17,16 @@ namespace Autoloader{
         public function run(){
             $iterator = new DirectoryIterator($this->path);
             while(($next = $iterator->next()) !== false){
-                echo $next, "\n";
+                echo 'FILE: ', $next, "\n";
+                $fileContent = file_get_contents($next);
+                var_dump($this->extractClasses($fileContent));
             }
+        }
+
+        private function extractClasses($fileContent){
+            $result = array();
+            //
+            return $result;
         }
     }
 
