@@ -3,8 +3,8 @@
 namespace Autoloader {
 
     class Builder {
-        const REGEXP_NAMESPACE = '/(namespace)\s+([_A-Za-z0-9\\\]+)/';
-        const REGEXP_CLASS     = '/(class|interface|trait)\s+([_A-Za-z0-9]+)/';
+        const REGEXP_NAMESPACE = '/(namespace)\s+([_A-Za-z0-9\\\]+)\s*[;{]/';
+        const REGEXP_CLASS     = '/(class|interface|trait)\s+([_A-Za-z0-9]+)(\s+extends\s+[_A-Za-z0-9]+)?(\s+implements\s+[_A-Za-z0-9]+(\s*,\s*[_A-Za-z0-9]+)*)?\s*{/';
 
         private $dirToIgnore = array();
         private $map = array();
