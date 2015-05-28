@@ -1,6 +1,6 @@
 #README
 
-##Secound level header
+##Second level header
 
 ```php
 <?php
